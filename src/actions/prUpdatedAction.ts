@@ -36,6 +36,20 @@ export default async (bucketName: string, uploadDirectory: string, environmentPr
         ErrorDocument: { Key: "index.html" },
       },
     }).promise();
+
+    console.log("Deleting public access block...");
+    await S3.deletePublicAccessBlock({
+      Bucket: bucketName,
+    }).promise();
+
+    try {
+      console.log("Delete Bucket ownership controls...");
+      await S3.deleteBucketOwnershipControls({
+        Bucket: bucketName,
+      }).promise();
+    } catch (error) {
+      console.error("Error deleting bucket ownership controls:", error);
+    }
   } else {
     console.log("S3 Bucket already exists. Skipping creation...");
   }
